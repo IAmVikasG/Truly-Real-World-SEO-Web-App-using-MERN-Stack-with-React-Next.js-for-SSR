@@ -1,9 +1,7 @@
 const express = require('express');
+const { getAllBlogs } = require('../controllers/blogController');
 const router = express.Router();
 
-router.get('/blogs', (req, res, next) =>
-{
-    res.send('Hello world.');
-});
+router.get('/blogs', getAllBlogs);
 
 module.exports = router;
