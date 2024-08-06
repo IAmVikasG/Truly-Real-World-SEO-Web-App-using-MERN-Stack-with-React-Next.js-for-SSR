@@ -9,6 +9,7 @@ const mongoose = require('mongoose');       // Mongoose for database
 
 // Imports routes
 const blogRoutes = require('./routes/blogRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 // Initialize the Express application
@@ -37,13 +38,8 @@ app.use(cookieParser());
 app.use(cors());
 
 // Define application routes
-// Basic route to check API status and server time
-app.get('/api/test', (req, res) =>
-{
-    res.json({ time: new Date().toString() }); // Respond with the current server time
-});
-
-app.get('/api', blogRoutes);
+app.use('/api', blogRoutes);
+app.use('/api', authRoutes);
 
 // Set the port from environment variables or default to 9000
 const port = process.env.PORT || 9000;
