@@ -7,6 +7,10 @@ const cookieParser = require('cookie-parser'); // Middleware for parsing cookies
 const cors = require('cors');               // Middleware for enabling CORS (Cross-Origin Resource Sharing)
 const mongoose = require('mongoose');       // Mongoose for database
 
+// Imports routes
+const blogRoutes = require('./routes/blogRoutes');
+
+
 // Initialize the Express application
 const app = express();
 
@@ -34,10 +38,12 @@ app.use(cors());
 
 // Define application routes
 // Basic route to check API status and server time
-app.get('/api', (req, res) =>
+app.get('/api/test', (req, res) =>
 {
     res.json({ time: new Date().toString() }); // Respond with the current server time
 });
+
+app.get('/api', blogRoutes);
 
 // Set the port from environment variables or default to 9000
 const port = process.env.PORT || 9000;
