@@ -41,6 +41,18 @@ app.use(cors());
 app.use('/api', blogRoutes);
 app.use('/api', authRoutes);
 
+// Global error middleware
+app.use(function (err, req, res, next)
+{
+    if (err.name === "UnauthorizedError")
+    {
+        res.status(401).send({error: "invalid token..."});
+    } else
+    {
+        next(err);
+    }
+});
+
 // Set the port from environment variables or default to 9000
 const port = process.env.PORT || 9000;
 
