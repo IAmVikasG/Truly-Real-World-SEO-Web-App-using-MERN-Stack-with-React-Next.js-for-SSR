@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const { Schema } = mongoose;
 
-const userSchema = new mongoose.Schema(
+// Define the User schema
+const userSchema = Schema(
     {
         username: {
             type: String,
@@ -46,13 +48,14 @@ const userSchema = new mongoose.Schema(
             contentType: String
         },
         resetPasswordLink: {
-            data: String,
+            type: String,
             default: ''
         }
     },
-    { timestamp: true }
+    { timestamps: true } 
 );
 
+// Virtual field for password
 userSchema
     .virtual('password')
     .set(function (password)
@@ -69,12 +72,15 @@ userSchema
         return this._password;
     });
 
+// Methods for the User schema
 userSchema.methods = {
+    // Authenticate method
     authenticate: function (plainText)
     {
         return this.encryptPassword(plainText) === this.hashed_password;
     },
 
+    // Encrypt password method
     encryptPassword: function (password)
     {
         if (!password) return '';
@@ -90,10 +96,12 @@ userSchema.methods = {
         }
     },
 
+    // Generate salt method
     makeSalt: function ()
     {
         return Math.round(new Date().valueOf() * Math.random()) + '';
     }
 };
 
+// Export the User model
 module.exports = mongoose.model('User', userSchema);
