@@ -1,13 +1,23 @@
 // Import required modules and dependencies
 const express = require('express');         // Express framework for building web applications
+require('dotenv').config();                 // Loads environment variables from a .env file into process.env
 const morgan = require('morgan');           // HTTP request logger middleware for Node.js
 const bodyParser = require('body-parser');  // Middleware for parsing JSON bodies
 const cookieParser = require('cookie-parser'); // Middleware for parsing cookies
 const cors = require('cors');               // Middleware for enabling CORS (Cross-Origin Resource Sharing)
-require('dotenv').config();                 // Loads environment variables from a .env file into process.env
+const mongoose = require('mongoose');       // Mongoose for database
 
 // Initialize the Express application
 const app = express();
+
+
+// Database setup
+main().catch(err => console.log(err));
+
+async function main()
+{
+    await mongoose.connect(process.env.DATABASE_URI);
+}
 
 // Middleware configuration
 // Use Morgan for logging HTTP requests in development mode
