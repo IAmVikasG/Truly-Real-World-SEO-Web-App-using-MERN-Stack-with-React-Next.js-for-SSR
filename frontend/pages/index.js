@@ -1,10 +1,11 @@
 import React from 'react';
+import Layout from '../components/Layout';
 
 function index(props) {
     return (
-        <div>
+        <Layout>
           Hello World
-        </div>
+        </Layout>
     );
 }
 
