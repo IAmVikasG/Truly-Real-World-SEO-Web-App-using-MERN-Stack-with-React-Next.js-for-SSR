@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
+import { signup } from '../../actions/auth';
 
 const SignupComponent = () =>
 {
@@ -15,39 +15,38 @@ const SignupComponent = () =>
 
     const { name, email, password, error, loading, message, showForm } = values;
 
-    const handleChange = name => event =>
+    const handleChange = (name) => (event) =>
     {
         setValues({ ...values, error: false, [name]: event.target.value });
     };
 
-    const handleSubmit = async event =>
+    const handleSubmit = async (event) =>
     {
         event.preventDefault();
         setValues({ ...values, loading: true, error: false });
 
         const user = { name, email, password };
 
-        try
+        signup(user).then(data =>
         {
-            // const response = await axios.post(`${process.env.API_DEVELOPMENT}/signup`, user);
-            setValues({
-                ...values,
-                name: '',
-                email: '',
-                password: '',
-                error: '',
-                loading: false,
-                message: response.data.message,
-                showForm: false
-            });
-        } catch (error)
-        {
-            setValues({
-                ...values,
-                error: error.response.data.error,
-                loading: false
-            });
-        }
+            if (data.error)
+            {
+                setValues({ ...values, error: data.error, loading: false });
+            } else
+            {
+                setValues({
+                    ...values,
+                    name: '',
+                    email: '',
+                    password: '',
+                    error: '',
+                    loading: false,
+                    message: data.message,
+                    showForm: false
+                });
+            }
+        });
+
     };
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');
