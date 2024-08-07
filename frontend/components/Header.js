@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import { APP_NAME } from '../config';
 import { signout, isAuth } from '../actions/auth';
 
@@ -16,12 +16,27 @@ import
 
 const Header = () =>
 {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter();
 
     const toggle = () =>
     {
         setIsOpen(!isOpen);
     };
+
+    const handleSignout = () =>
+    {
+        signout(() =>
+        {
+            router.replace('/signin');
+        });
+    };
+
+    useEffect(() =>
+    {
+        setIsAuthenticated(isAuth());
+    }, []);
 
     return (
         <div>
@@ -32,28 +47,29 @@ const Header = () =>
                 <NavbarToggler onClick={toggle} />
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
-                        
-                        {!isAuth() && (
-                            <>
+                        <>
+                            {!isAuthenticated && (
+                                <>
+                                    <NavItem>
+                                        <Link href="/signin" legacyBehavior passHref>
+                                            <NavLink style={{ cursor: 'pointer' }}>Signin</NavLink>
+                                        </Link>
+                                    </NavItem>
+                                    <NavItem>
+                                        <Link href="/signup" legacyBehavior passHref>
+                                            <NavLink style={{ cursor: 'pointer' }}>Signup</NavLink>
+                                        </Link>
+                                    </NavItem>
+                                </>
+                            )}
+                            {isAuthenticated && (
                                 <NavItem>
-                                    <Link href="/signin" legacyBehavior >
-                                        <NavLink style={{ cursor: 'pointer' }}>Signin</NavLink>
-                                    </Link>
+                                    <NavLink style={{ cursor: 'pointer' }} onClick={handleSignout}>
+                                        Signout
+                                    </NavLink>
                                 </NavItem>
-                                <NavItem>
-                                    <Link href="/signup" legacyBehavior >
-                                        <NavLink style={{ cursor: 'pointer' }}>Signup</NavLink>
-                                    </Link>
-                                </NavItem>
-                            </>
-                        )}
-                        {isAuth() && (
-                            <NavItem>
-                                <NavLink style={{ cursor: 'pointer' }} onClick={() => signout(() => Router.replace(`/signin`))}>
-                                    Signout
-                                </NavLink>
-                            </NavItem>
-                        )}
+                            )}
+                        </>
                     </Nav>
                 </Collapse>
             </Navbar>
