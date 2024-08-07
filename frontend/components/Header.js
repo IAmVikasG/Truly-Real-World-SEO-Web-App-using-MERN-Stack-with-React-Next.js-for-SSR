@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import Router from 'next/router';
 import { APP_NAME } from '../config';
+import { signout, isAuth } from '../actions/auth';
+
 import
     {
         Collapse,
         Navbar,
         NavbarToggler,
-        NavbarBrand,
         Nav,
         NavItem,
-        NavLink,
-        UncontrolledDropdown,
-        DropdownToggle,
-        DropdownMenu,
-        DropdownItem
+        NavLink
     } from 'reactstrap';
 
 const Header = () =>
@@ -34,16 +32,28 @@ const Header = () =>
                 <NavbarToggler onClick={toggle} />
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
-                        <NavItem>
-                            <Link href="/signin" legacyBehavior>
-                                <NavLink>Signin</NavLink>
-                            </Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link href="/signup" legacyBehavior>
-                                <NavLink>Signup</NavLink>
-                            </Link>
-                        </NavItem>
+                        
+                        {!isAuth() && (
+                            <>
+                                <NavItem>
+                                    <Link href="/signin" legacyBehavior >
+                                        <NavLink style={{ cursor: 'pointer' }}>Signin</NavLink>
+                                    </Link>
+                                </NavItem>
+                                <NavItem>
+                                    <Link href="/signup" legacyBehavior >
+                                        <NavLink style={{ cursor: 'pointer' }}>Signup</NavLink>
+                                    </Link>
+                                </NavItem>
+                            </>
+                        )}
+                        {isAuth() && (
+                            <NavItem>
+                                <NavLink style={{ cursor: 'pointer' }} onClick={() => signout(() => Router.replace(`/signin`))}>
+                                    Signout
+                                </NavLink>
+                            </NavItem>
+                        )}
                     </Nav>
                 </Collapse>
             </Navbar>
