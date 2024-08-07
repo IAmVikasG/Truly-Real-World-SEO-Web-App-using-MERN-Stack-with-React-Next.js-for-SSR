@@ -52,7 +52,14 @@ const SignupComponent = () =>
 
     useEffect(function ()
     {
-        isAuth() && Router.push('/');
+        if (isAuth() && isAuth().role === 1)
+        {
+            Router.push(`/admin`);
+        } else
+        {
+            Router.push(`/user`);
+        }
+        
     }, []);
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');
