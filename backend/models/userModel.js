@@ -41,7 +41,7 @@ const userSchema = Schema(
         },
         role: {
             type: Number,
-            trim: true
+            default: 0
         },
         photo: {
             data: Buffer,
@@ -52,7 +52,7 @@ const userSchema = Schema(
             default: ''
         }
     },
-    { timestamps: true } 
+    { timestamps: true }
 );
 
 // Virtual field for password

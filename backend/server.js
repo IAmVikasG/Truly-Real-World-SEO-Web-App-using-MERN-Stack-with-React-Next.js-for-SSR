@@ -10,6 +10,7 @@ const mongoose = require('mongoose');       // Mongoose for database
 // Imports routes
 const blogRoutes = require('./routes/blogRoutes');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 
 // Initialize the Express application
@@ -40,6 +41,7 @@ app.use(cors());
 // Define application routes
 app.use('/api', blogRoutes);
 app.use('/api', authRoutes);
+app.use('/api', userRoutes);
 
 // Global error middleware
 app.use(function (err, req, res, next)

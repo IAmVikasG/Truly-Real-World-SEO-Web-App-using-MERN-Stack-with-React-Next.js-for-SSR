@@ -9,6 +9,37 @@ exports.requireSignin = expressjwt({
     userProperty: "auth",
 });
 
+exports.authMiddleware = async(req, res, next) =>
+{
+    const userId = req.auth._id;
+    const existingUser = await User.findById({ _id: userId }).exec();
+    if (!existingUser) {
+        return res.status(400).json({
+            error: 'User not found'
+        });
+    }
+    req.profile = existingUser;
+    next();
+};
+
+exports.adminMiddleware = async(req, res, next) =>
+{
+    const userId = req.auth._id;
+    const existingUser = await User.findById({ _id: userId }).exec();
+    if (!existingUser) {
+        return res.status(400).json({
+            error: 'User not found'
+        });
+    }
+    if (existingUser.role !== 1) {
+        return res.status(400).json({
+            error: 'Admin resource. Access denied'
+        });
+    }
+    req.profile = existingUser;
+    next();
+};
+
 exports.signup = async (req, res) =>
 {
     try
