@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { signin, authenticate } from '../../actions/auth';
+import React, { useEffect, useState } from 'react';
+import { signin, authenticate, isAuth } from '../../actions/auth';
 import Router from 'next/router';
 
 
@@ -46,6 +46,11 @@ const SigninComponent = () =>
         });
 
     };
+
+    useEffect(function ()
+    {
+        isAuth() && Router.push('/');
+    }, []);
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');
     const showError = () => (error ? <div className="alert alert-danger">{error}</div> : '');

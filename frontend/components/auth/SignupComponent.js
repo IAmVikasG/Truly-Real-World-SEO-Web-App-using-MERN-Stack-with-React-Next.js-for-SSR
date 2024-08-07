@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { signup } from '../../actions/auth';
+import React, { useEffect, useState } from 'react';
+import { isAuth, signup } from '../../actions/auth';
 
 const SignupComponent = () =>
 {
@@ -48,6 +48,11 @@ const SignupComponent = () =>
         });
 
     };
+
+    useEffect(function ()
+    {
+        isAuth() && Router.push('/');
+    }, []);
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');
     const showError = () => (error ? <div className="alert alert-danger">{error}</div> : '');
