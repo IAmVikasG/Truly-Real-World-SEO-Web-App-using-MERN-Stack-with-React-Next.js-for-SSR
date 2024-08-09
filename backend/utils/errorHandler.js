@@ -2,7 +2,6 @@ const responseHandler = require('./responseHandler');
 
 module.exports = (err, req, res, next) =>
 {
-    console.log(err);
     // Handle duplicate key error (MongoDB)
     if (err.code === 11000)
     {
@@ -24,7 +23,7 @@ module.exports = (err, req, res, next) =>
     // Handle UnauthorizedError (typically from express-jwt middleware)
     if (err.name === 'UnauthorizedError')
     {
-        return responseHandler(res, null, 'You are not authorized to access this resource.', 401);
+        return responseHandler(res, null, err.inner.message, 401);
     }
 
     // Handle other errors
