@@ -28,11 +28,13 @@ const SignupComponent = () =>
 
         const user = { name, email, password };
 
-        signup(user).then(data =>
+        signup(user).then(result =>
         {
-            if (data.error)
+            let { data, success, message } = result;
+
+            if (!success)
             {
-                setValues({ ...values, error: data.error, loading: false });
+                setValues({ ...values, error: message, loading: false });
             } else
             {
                 setValues({
@@ -42,7 +44,7 @@ const SignupComponent = () =>
                     password: '',
                     error: '',
                     loading: false,
-                    message: data.message,
+                    message: message,
                     showForm: false
                 });
             }
@@ -55,11 +57,14 @@ const SignupComponent = () =>
         if (isAuth() && isAuth().role === 1)
         {
             Router.push(`/admin`);
-        } else
+        } else if (isAuth() && isAuth().role === 0)
         {
             Router.push(`/user`);
+        } else
+        {
+            Router.push(`/signup`);
         }
-        
+
     }, []);
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');

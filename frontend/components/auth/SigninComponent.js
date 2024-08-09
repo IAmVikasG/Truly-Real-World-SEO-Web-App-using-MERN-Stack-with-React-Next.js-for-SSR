@@ -6,7 +6,7 @@ import Router from 'next/router';
 const SigninComponent = () =>
 {
     const [values, setValues] = useState({
-        email: 'user@gmail.com',
+        email: 'admin@gmail.com',
         password: '123456',
         error: '',
         loading: false,
@@ -28,11 +28,13 @@ const SigninComponent = () =>
 
         const user = { email, password };
 
-        signin(user).then(data =>
+        signin(user).then(result =>
         {
-            if (data.error)
+            let { data, success, message } = result;
+
+            if (!success)
             {
-                setValues({ ...values, error: data.error, loading: false });
+                setValues({ ...values, error: message, loading: false });
             } else
             {
                 // save user token to cookie
@@ -55,7 +57,16 @@ const SigninComponent = () =>
 
     useEffect(function ()
     {
-        isAuth() && Router.push('/');
+        if (isAuth() && isAuth().role === 1)
+        {
+            Router.push(`/admin`);
+        } else if (isAuth() && isAuth().role === 0)
+        {
+            Router.push(`/user`);
+        } else
+        {
+            Router.push(`/signin`);
+        }
     }, []);
 
     const showLoading = () => (loading ? <div className="alert alert-info">Loading...</div> : '');
