@@ -9,6 +9,7 @@ const fs = require('fs'); // Import Node.js file system module to work with file
 const responseHandler = require('../utils/responseHandler');
 const asyncHandler = require('../utils/asyncHandler');
 const path = require('path');
+const { smartTrim } = require('../helpers/blog');
 
 exports.create = asyncHandler(async (req, res, next) =>
 {
@@ -53,6 +54,7 @@ exports.create = asyncHandler(async (req, res, next) =>
         let blog = new Blog();
         blog.title = title;
         blog.body = body;
+        blog.excerpt = smartTrim(body, 320, ' ', ' ...');
         blog.slug = slugify(title).toLowerCase();
         blog.mtitle = `${title} | ${process.env.APP_NAME}`;
         blog.mdesc = stripHtml(body.substring(0, 160)).result;
@@ -72,8 +74,10 @@ exports.create = asyncHandler(async (req, res, next) =>
             blog.photo.contentType = files.photo.type;
         }
         try {
-            const resp = await blog.save();
-            return responseHandler(res, resp, 'Blog successfully created', 201);
+            const result = await blog.save();
+            await Blog.findByIdAndUpdate(result._id, { $push: { categories: arrayOfCategories, tags: arrayOfTags } }, { new: true });
+
+            return responseHandler(res, result, 'Blog successfully created', 201);
         } catch (error)
         {
             return next(error);
