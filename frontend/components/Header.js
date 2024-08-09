@@ -33,6 +33,20 @@ const Header = () =>
         });
     };
 
+    const handleRedirectionOfDashboard = (role) =>
+    {
+        switch (role) {
+            case 0:
+                return router.replace('/user');
+
+            case 1:
+                return router.replace('/admin');
+
+            default:
+                break;
+        }
+    }
+
     useEffect(() =>
     {
         setIsAuthenticated(isAuth());
@@ -69,6 +83,21 @@ const Header = () =>
                                     </NavLink>
                                 </NavItem>
                             )}
+                            {isAuthenticated && isAuthenticated.role == 0 && (
+                                <NavItem>
+                                    <NavLink style={{ cursor: 'pointer' }} onClick={()=>handleRedirectionOfDashboard(isAuthenticated.role)}>
+                                        {`${isAuthenticated.name}'s Dashboard`}
+                                    </NavLink>
+                                </NavItem>
+                            )}
+                            {isAuthenticated && isAuthenticated.role == 1 && (
+                                <NavItem>
+                                    <NavLink style={{ cursor: 'pointer' }} onClick={()=>handleRedirectionOfDashboard(isAuthenticated.role)}>
+                                        {`${isAuthenticated.name}'s Dashboard`}
+                                    </NavLink>
+                                </NavItem>
+                            )}
+
                         </>
                     </Nav>
                 </Collapse>
