@@ -3,6 +3,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { APP_NAME } from '../config';
 import { signout, isAuth } from '../actions/auth';
+import NProgress from 'nprogress';
+import Router from 'next/router';
+
+
+Router.onRouteChangeStart = url => NProgress.start();
+Router.onRouteChangeComplete = url => NProgress.done();
+Router.onRouteChangeError = url => NProgress.done();
 
 import
     {
