@@ -39,7 +39,10 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 // Enable Cross-Origin Resource Sharing for all routes
-app.use(cors());
+if (process.env.NODE_ENV === 'development')
+{
+    app.use(cors({ origin: `${process.env.CLIENT_URL}` }));
+}
 
 // Define application routes
 app.use('/api', blogRoutes);
