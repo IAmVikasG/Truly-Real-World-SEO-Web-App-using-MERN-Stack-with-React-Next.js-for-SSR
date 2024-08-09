@@ -1,7 +1,14 @@
-module.exports = (res, data = {}, message = 'Success', statusCode = 200) =>
+module.exports = (res, data = null, message = 'Success', statusCode = 200) =>
 {
-    return res.status(statusCode).json({
+    const success = statusCode >= 200 && statusCode < 300;
+
+    const responseObj = {
+        success,
         message,
-        data
-    });
+    };
+
+    if (data && success) responseObj.data = data;
+
+    // Send the response
+    return res.status(statusCode).json(responseObj);
 };

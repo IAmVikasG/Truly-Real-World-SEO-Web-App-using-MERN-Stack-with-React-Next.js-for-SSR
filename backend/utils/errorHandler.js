@@ -2,6 +2,7 @@ const responseHandler = require('./responseHandler');
 
 module.exports = (err, req, res, next) =>
 {
+    console.log(err);
     // Handle duplicate key error (MongoDB)
     if (err.code === 11000)
     {
