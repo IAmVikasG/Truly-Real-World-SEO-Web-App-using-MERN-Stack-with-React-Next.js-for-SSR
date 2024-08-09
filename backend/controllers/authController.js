@@ -1,126 +1,56 @@
 const User = require('../models/userModel'); // Import the User model
 const shortId = require('shortid'); // Import the shortid library for generating unique usernames
 const jwt = require('jsonwebtoken');
-const { expressjwt: expressjwt } = require('express-jwt');
+const responseHandler = require('../utils/responseHandler');
+const asyncHandler = require('../utils/asyncHandler');
 
-exports.requireSignin = expressjwt({
-    secret: process.env.JWT_SECRET,
-    algorithms: ["HS256"],
-    userProperty: "auth",
+
+exports.signup = asyncHandler(async (req, res) =>
+{
+    // Extract name, email, and password from the request body
+    const { name, email, password } = req.body;
+
+    // Check if a user with the given email already exists
+    await User.findOne({ email }).exec();
+
+    let username = shortId.generate();
+    let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+
+    // Create a new user with the extracted information
+    let newUser = new User({ name, email, password, profile, username });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    // Respond with a success message
+    return responseHandler(res, null, 'Signup success! Please signin.', 201);
+
 });
 
-exports.authMiddleware = async(req, res, next) =>
-{
-    const userId = req.auth._id;
-    const existingUser = await User.findById({ _id: userId }).exec();
-    if (!existingUser) {
-        return res.status(400).json({
-            error: 'User not found'
-        });
-    }
-    req.profile = existingUser;
-    next();
-};
-
-exports.adminMiddleware = async(req, res, next) =>
-{
-    const userId = req.auth._id;
-    const existingUser = await User.findById({ _id: userId }).exec();
-    if (!existingUser) {
-        return res.status(400).json({
-            error: 'User not found'
-        });
-    }
-    if (existingUser.role !== 1) {
-        return res.status(400).json({
-            error: 'Admin resource. Access denied'
-        });
-    }
-    req.profile = existingUser;
-    next();
-};
-
-exports.signup = async (req, res) =>
-{
-    try
-    {
-        // Check if a user with the given email already exists
-        const existingUser = await User.findOne({ email: req.body.email }).exec();
-        if (existingUser)
-        {
-            return res.status(400).json({
-                error: 'Email is taken'
-            });
-        }
-
-        // Extract name, email, and password from the request body
-        const { name, email, password } = req.body;
-        let username = shortId.generate();
-        let profile = `${process.env.CLIENT_URL}/profile/${username}`;
-
-        // Create a new user with the extracted information
-        let newUser = new User({ name, email, password, profile, username });
-
-        // Save the new user to the database
-        await newUser.save();
-
-        // Respond with a success message
-        res.json({
-            message: 'Signup success! Please signin.'
-        });
-    } catch (err)
-    {
-        // Handle any errors that occur
-        return res.status(400).json({
-            error: err.message
-        });
-    }
-};
-
-exports.signin = async (req, res) =>
+exports.signin = asyncHandler(async (req, res) =>
 {
     const { email, password } = req.body;
 
-    try
+    // Check if user exists
+    const user = await User.findOne({ email }).exec();
+    if (!user)
     {
-        // Check if user exists
-        const user = await User.findOne({ email: req.body.email }).exec();
-        if (!user)
-        {
-            return res.status(400).json({
-                error: 'User with that email does not exist. Please signup.'
-            });
-        }
-
-        // Authenticate
-        if (!user.authenticate(password))
-        {
-            return res.status(400).json({
-                error: 'Email and password do not match.'
-            });
-        }
-
-        // Generate a token and send to client
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-        // Set the token as a cookie in the response
-        res.cookie('token', token, { expiresIn: '1d' });
-
-        // Extract user details and send in response
-        const { _id, username, name, email, role } = user;
-        return res.json({
-            token,
-            user: { _id, username, name, email, role }
-        });
-    } catch (err)
-    {
-        console.log(err);
-        // Handle any errors that occur
-        return res.status(400).json({
-            error: err.message
-        });
+        return responseHandler(res, null, 'User with that email does not exist. Please signup.', 400);
     }
-};
+
+    // Authenticate user
+    if (!user.authenticate(password))
+    {
+        return responseHandler(res, null, 'Email and password do not match.', 400);
+    }
+
+    // Generate token and respond to client
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    res.cookie('token', token, { expiresIn: '1d' });
+
+    const { _id, username, name, role } = user;
+    return responseHandler(res, { token, user: { _id, username, name, email, role } }, 'Signin successful', 200);
+});
 
 exports.signout = (req, res) =>
 {

@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser'); // Middleware for parsing cookies
 const cors = require('cors');               // Middleware for enabling CORS (Cross-Origin Resource Sharing)
 const mongoose = require('mongoose');       // Mongoose for database
 
+
 // Imports routes
 const blogRoutes = require('./routes/blogRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -45,17 +46,8 @@ app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
 
-// Global error middleware
-app.use(function (err, req, res, next)
-{
-    if (err.name === "UnauthorizedError")
-    {
-        res.status(401).send({error: "invalid token..."});
-    } else
-    {
-        next(err);
-    }
-});
+// Error middleware
+app.use(require('./utils/errorHandler'));
 
 // Set the port from environment variables or default to 9000
 const port = process.env.PORT || 9000;
