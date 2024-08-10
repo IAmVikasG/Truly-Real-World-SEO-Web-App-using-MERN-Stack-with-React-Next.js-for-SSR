@@ -142,6 +142,7 @@ exports.read = asyncHandler(async (req, res) =>
         .populate('categories', '_id name slug')
         .populate('tags', '_id name slug')
         .populate('postedBy', '_id name username')
+        .select("-photo")
         .select('_id title body slug mtitle mdesc categories tags postedBy createdAt updatedAt')
         .exec();
     if (!blog) return responseHandler(res, {}, 'No records found.', 404);
@@ -220,7 +221,7 @@ exports.update = asyncHandler(async (req, res, next) =>
         try
         {
             const result = await oldBlog.save();
-
+            result.photo = undefined;
             return responseHandler(res, result, 'Blog successfully updated', 201);
         } catch (error)
         {
@@ -228,4 +229,17 @@ exports.update = asyncHandler(async (req, res, next) =>
         }
 
     });
+});
+
+
+exports.photo = asyncHandler(async (req, res) =>
+{
+    const slug = req.params.slug.toLowerCase();
+    const blog = await Blog.findOne({ slug })
+        .select('photo')
+        .exec();
+    if (!blog) return responseHandler(res, null, 'No record found.', 404);
+
+    res.set('Content-Type', blog.photo.contentType);
+    return res.send(blog.photo.data);
 });
