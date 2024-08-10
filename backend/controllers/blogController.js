@@ -161,7 +161,71 @@ exports.remove = asyncHandler(async (req, res) =>
     return responseHandler(res, null, 'Blog deleted successfully.');
 });
 
-exports.update = (req, res) =>
+exports.update = asyncHandler(async (req, res, next) =>
 {
-    //
-};
+    const slug = req.params.slug.toLowerCase();
+
+    let oldBlog = await Blog.findOne({ slug }).exec();
+
+    if (!oldBlog) return responseHandler(res, {}, 'No records found.', 404);
+
+    let form = new formidable.IncomingForm();
+    // Set custom upload directory
+    const uploadDir = path.join(__dirname, '../uploads');
+
+    // Ensure the directory exists
+    if (!fs.existsSync(uploadDir))
+    {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    form.keepExtensions = true;
+    form.uploadDir = uploadDir; // Set the upload directory
+    form.parse(req, async (err, fields, files) =>
+    {
+        if (err) return responseHandler(res, {}, 'Image could not upload.', 400);
+
+        let slugBeforeMerge = oldBlog.slug;
+        oldBlog = _.merge(oldBlog, fields);
+        oldBlog.slug = slugBeforeMerge;
+
+        const { body, desc, categories, tags } = fields;
+
+        if (body)
+        {
+            oldBlog.excerpt = smartTrim(body, 320, ' ', ' ...');
+            oldBlog.desc = stripHtml(body.substring(0, 160));
+        }
+
+        if (categories)
+        {
+            oldBlog.categories = categories.split(',');
+        }
+
+        if (tags)
+        {
+            oldBlog.tags = tags.split(',');
+        }
+
+
+        if (files.photo)
+        {
+            if (files.photo.size > 10000000)
+            {
+                return responseHandler(res, {}, 'Image should be less then 1mb in size', 400);
+            }
+            oldBlog.photo.data = fs.readFileSync(files.photo.path);
+            oldBlog.photo.contentType = files.photo.type;
+        }
+        try
+        {
+            const result = await oldBlog.save();
+
+            return responseHandler(res, result, 'Blog successfully updated', 201);
+        } catch (error)
+        {
+            return next(error);
+        }
+
+    });
+});
