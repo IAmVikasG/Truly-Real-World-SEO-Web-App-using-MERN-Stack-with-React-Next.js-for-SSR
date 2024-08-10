@@ -69,9 +69,29 @@ const BlogReadComponent = () =>
                     <button className="btn btn-sm btn-danger" onClick={() => deleteConfirm(blog.slug)}>
                         Delete
                     </button>
+                    {showUpdateButton(blog)}
                 </div>
             );
         });
+    };
+
+    const showUpdateButton = blog =>
+    {
+        if (isAuth() && isAuth().role === 0)
+        {
+            return (
+                <Link href={`/user/crud/${blog.slug}`} className="btn btn-sm btn-warning">
+                    Update
+                </Link>
+            );
+        } else if (isAuth() && isAuth().role === 1)
+        {
+            return (
+                <Link href={`/admin/crud/${blog.slug}`} className="ml-2 btn btn-sm btn-warning">
+                    Update
+                </Link>
+            );
+        }
     };
 
     return (
