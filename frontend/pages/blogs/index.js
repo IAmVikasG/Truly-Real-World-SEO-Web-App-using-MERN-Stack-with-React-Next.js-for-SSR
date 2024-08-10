@@ -4,9 +4,25 @@ import Layout from '../../components/Layout';
 import { useState } from 'react';
 import { listBlogsWithCategoriesAndTags } from '../../actions/blog';
 import { API } from '../../config';
+import moment from 'moment';
+import Card from '../../components/blog/Card';
 
-const Blogs = () =>
+
+const Blogs = ({ blogs, categories, tags, size }) =>
 {
+    const showAllBlogs = () =>
+    {
+        return blogs.map((blog, i) =>
+        {
+            return (
+                <article key={i}>
+                    <Card blog={blog} />
+                    <hr />
+                </article>
+            );
+        });
+    };
+
     return (
         <Layout>
             <main>
@@ -22,7 +38,7 @@ const Blogs = () =>
                 </div>
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-md-12">show all blogs</div>
+                        <div className="col-md-12">{showAllBlogs()}</div>
                     </div>
                 </div>
             </main>
@@ -30,4 +46,24 @@ const Blogs = () =>
     );
 };
 
-export default Blogs; 
+Blogs.getInitialProps = () =>
+{
+    return listBlogsWithCategoriesAndTags().then(result =>
+    {
+        const { success, data, message } = result;
+        if (!success)
+        {
+            console.log(message);
+        } else
+        {
+            return {
+                blogs: data.blogs,
+                categories: data.categories,
+                tags: data.tags,
+                size: data.size
+            };
+        }
+    });
+};
+
+export default Blogs;
