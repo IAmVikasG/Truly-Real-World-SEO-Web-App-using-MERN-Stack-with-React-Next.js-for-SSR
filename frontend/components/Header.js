@@ -69,6 +69,12 @@ const Header = () =>
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
                         <>
+                            <NavItem>
+                                <Link href="/blogs" legacyBehavior passHref>
+                                    <NavLink style={{ cursor: 'pointer' }}>Blogs</NavLink>
+                                </Link>
+                            </NavItem>
+
                             {!isAuthenticated && (
                                 <>
                                     <NavItem>
