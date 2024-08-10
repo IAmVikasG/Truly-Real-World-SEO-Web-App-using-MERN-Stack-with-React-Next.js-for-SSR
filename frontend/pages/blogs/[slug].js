@@ -8,8 +8,28 @@ import Parser from 'html-react-parser';
 import moment from 'moment';
 
 
-const SingleBlog = ({ blog }) =>
+const SingleBlog = ({ blog, query }) =>
 {
+    const head = () => (
+        <Head>
+            <title>
+                {blog.title} | {APP_NAME}
+            </title>
+            <meta name="description" content={blog.mdesc} />
+            <link rel="canonical" href={`${DOMAIN}/blogs/${query.slug}`} />
+            <meta property="og:title" content={`${blog.title}| ${APP_NAME}`} />
+            <meta property="og:description" content={blog.mdesc} />
+            <meta property="og:type" content="webiste" />
+            <meta property="og:url" content={`${DOMAIN}/blogs/${query.slug}`} />
+            <meta property="og:site_name" content={`${APP_NAME}`} />
+
+            <meta property="og:image" content={`${API}/blog/photo/${blog.slug}`} />
+            <meta property="og:image:secure_url" ccontent={`${API}/blog/photo/${blog.slug}`} />
+            <meta property="og:image:type" content="image/jpg" />
+            <meta property="fb:app_id" content={`${FB_APP_ID}`} />
+        </Head>
+    );
+
     const showBlogCategories = blog =>
         blog.categories.map((c, i) => (
             <Link key={i} href={`/categories/${c.slug}`} className="btn btn-primary mr-1 ml-1 mt-3">
@@ -26,6 +46,7 @@ const SingleBlog = ({ blog }) =>
 
     return (
         <>
+            {head()}
             <Layout>
                 <main>
                     <article>
@@ -88,7 +109,7 @@ SingleBlog.getInitialProps = ({ query }) =>
         } else
         {
             // console.log('GET INITIAL PROPS IN SINGLE BLOG', data);
-            return { blog: data };
+            return { blog: data, query };
         }
     });
 };
