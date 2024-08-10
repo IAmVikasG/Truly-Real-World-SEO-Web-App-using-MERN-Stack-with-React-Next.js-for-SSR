@@ -243,3 +243,17 @@ exports.photo = asyncHandler(async (req, res) =>
     res.set('Content-Type', blog.photo.contentType);
     return res.send(blog.photo.data);
 });
+
+exports.listRelated = asyncHandler(async (req, res) =>
+{
+    let limit = req.body.limit ? parseInt(req.body.limit) : 3;
+    const { _id, categories } = req.body.blog;
+
+    const blog = await Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
+        .limit(limit)
+        .populate('postedBy', '_id name profile')
+        .select('title slug excerpt postedBy createdAt updatedAt')
+        .exec();
+    if (!blog) return responseHandler(res, {}, 'No records found.', 404);
+    return responseHandler(res, blog, 'Related blog fetched successfully.');
+});
