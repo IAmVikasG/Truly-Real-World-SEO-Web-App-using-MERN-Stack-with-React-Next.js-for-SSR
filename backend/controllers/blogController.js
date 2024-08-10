@@ -85,3 +85,83 @@ exports.create = asyncHandler(async (req, res, next) =>
 
     });
 });
+
+exports.list = asyncHandler(async (req, res) =>
+{
+    const blogs = await Blog.find({})
+        .populate('categories', '_id name slug')
+        .populate('tags', '_id name slug')
+        .populate('postedBy', '_id name username')
+        .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
+        .exec();
+
+    if (!blogs) return responseHandler(res, null, 'No records found.', 404);
+
+    return responseHandler(res, blogs, 'Blogs successfully fetched.');
+});
+
+exports.listAllBlogsCategoriesTags = asyncHandler(async (req, res) =>
+{
+    let limit = req.body.limit ? parseInt(req.body.limit) : 10;
+    let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
+    // Fetch blogs, categories, and tags
+    const [blogs, categories, tags] = await Promise.all([
+        Blog.find({})
+            .populate('categories', '_id name slug')
+            .populate('tags', '_id name slug')
+            .populate('postedBy', '_id name username profile')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select('_id title slug excerpt categories tags postedBy createdAt updatedAt')
+            .exec(),
+        Category.find({}).exec(),
+        Tag.find({}).exec()
+    ]);
+
+    // Handle cases where data does not exist
+    if (!blogs.length && !categories.length && !tags.length)
+    {
+        return responseHandler(res, {}, 'No records found.', 404);
+    }
+
+    return responseHandler(res, {
+        blogs: blogs || [],
+        categories: categories || [],
+        tags: tags || [],
+        size: blogs.length
+    }, 'Data fetched successfully.');
+});
+
+
+exports.read = asyncHandler(async (req, res) =>
+{
+    const slug = req.params.slug.toLowerCase();
+    const blog = await Blog.findOne({ slug })
+        .populate('categories', '_id name slug')
+        .populate('tags', '_id name slug')
+        .populate('postedBy', '_id name username')
+        .select('_id title body slug mtitle mdesc categories tags postedBy createdAt updatedAt')
+        .exec();
+    if (!blog) return responseHandler(res, {}, 'No records found.', 404);
+    return responseHandler(res, blog, 'Blog fetched successfully.');
+});
+
+exports.remove = asyncHandler(async (req, res) =>
+{
+    const slug = req.params.slug.toLowerCase();
+
+    const blog = await Blog.find({ slug }).exec();
+
+    if (!blog) return responseHandler(res, {}, 'No records found.', 404);
+
+    await Blog.deleteOne({ slug });
+
+    return responseHandler(res, null, 'Blog deleted successfully.');
+});
+
+exports.update = (req, res) =>
+{
+    //
+};
