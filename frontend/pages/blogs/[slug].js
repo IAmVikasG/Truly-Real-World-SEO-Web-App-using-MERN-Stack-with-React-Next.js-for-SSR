@@ -1,15 +1,19 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
-import { useState } from 'react';
-import { singleBlog } from '../../actions/blog';
+import { useEffect, useState } from 'react';
+import { singleBlog, listRelated } from '../../actions/blog';
 import { API, DOMAIN, APP_NAME, FB_APP_ID } from '../../config';
 import Parser from 'html-react-parser';
 import moment from 'moment';
+import SmallCard from '../../components/blog/SmallCard';
+
 
 
 const SingleBlog = ({ blog, query }) =>
 {
+    const [related, setRelated] = useState([]);
+
     const head = () => (
         <Head>
             <title>
@@ -30,19 +34,54 @@ const SingleBlog = ({ blog, query }) =>
         </Head>
     );
 
+    const loadRelated = () =>
+    {
+        listRelated({ blog }).then(result =>
+        {
+            const { success, data, message } = result;
+            if (!success)
+            {
+                console.log(message);
+            } else
+            {
+                setRelated(data);
+            }
+        });
+    };
+
+    useEffect(() =>
+    {
+        loadRelated();
+    }, []);
+
     const showBlogCategories = blog =>
+    {
         blog.categories.map((c, i) => (
             <Link key={i} href={`/categories/${c.slug}`} className="btn btn-primary mr-1 ml-1 mt-3">
                 {c.name}
             </Link>
         ));
+    }
 
     const showBlogTags = blog =>
+    {
         blog.tags.map((t, i) => (
             <Link key={i} href={`/tags/${t.slug}`} className="btn btn-outline-primary mr-1 ml-1 mt-3">
                 {t.name}
             </Link>
         ));
+    }
+
+    const showRelatedBlog = () =>
+    {
+        return related.map((blog, i) => (
+            <div className="col-md-4" key={i}>
+                <article>
+                    <SmallCard blog={blog} />
+                </article>
+            </div>
+        ));
+    };
 
     return (
         <>
@@ -83,8 +122,7 @@ const SingleBlog = ({ blog, query }) =>
 
                         <div className="container">
                             <h4 className="text-center pt-5 pb-5 h2">Related blogs</h4>
-                            <hr />
-                            <p>show related blogs</p>
+                            <div className="row">{showRelatedBlog()}</div>
                         </div>
 
                         <div className="container pb-5">
