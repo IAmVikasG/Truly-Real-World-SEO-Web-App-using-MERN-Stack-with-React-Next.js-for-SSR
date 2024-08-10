@@ -1,15 +1,38 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { withRouter } from 'next/router';
 import Layout from '../../components/Layout';
-import { useState } from 'react';
 import { listBlogsWithCategoriesAndTags } from '../../actions/blog';
-import { API } from '../../config';
-import moment from 'moment';
 import Card from '../../components/blog/Card';
+import { API, DOMAIN, APP_NAME, FB_APP_ID } from '../../config';
 
 
-const Blogs = ({ blogs, categories, tags, size }) =>
+const Blogs = ({ blogs, categories, tags, size, router }) =>
 {
+    const head = () => (
+        <Head>
+            <title>Programming blogs | {APP_NAME}</title>
+            <meta
+                name="description"
+                content="Programming blogs and tutorials on react node next vue php laravel and web developoment"
+            />
+            <link rel="canonical" href={`${DOMAIN}${router.pathname}`} />
+            <meta property="og:title" content={`Latest web developoment tutorials | ${APP_NAME}`} />
+            <meta
+                property="og:description"
+                content="Programming blogs and tutorials on react node next vue php laravel and web developoment"
+            />
+            <meta property="og:type" content="webiste" />
+            <meta property="og:url" content={`${DOMAIN}${router.pathname}`} />
+            <meta property="og:site_name" content={`${APP_NAME}`} />
+
+            <meta property="og:image" content={`${DOMAIN}/static/images/seoblog.jpg`} />
+            <meta property="og:image:secure_url" ccontent={`${DOMAIN}/static/images/seoblog.jpg`} />
+            <meta property="og:image:type" content="image/jpg" />
+            <meta property="fb:app_id" content={`${FB_APP_ID}`} />
+        </Head>
+    );
+
     const showAllBlogs = () =>
     {
         return blogs.map((blog, i) =>
@@ -42,6 +65,8 @@ const Blogs = ({ blogs, categories, tags, size }) =>
     };
 
     return (
+        <>
+            {head()}
         <Layout>
             <main>
                 <div className="container-fluid">
@@ -64,7 +89,8 @@ const Blogs = ({ blogs, categories, tags, size }) =>
                     </div>
                 </div>
             </main>
-        </Layout>
+            </Layout>
+        </>
     );
 };
 
@@ -88,4 +114,4 @@ Blogs.getInitialProps = () =>
     });
 };
 
-export default Blogs;
+export default withRouter(Blogs);
