@@ -251,7 +251,7 @@ exports.listRelated = asyncHandler(async (req, res) =>
 
     const blog = await Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
         .limit(limit)
-        .populate('postedBy', '_id name profile')
+        .populate('postedBy', '_id name username profile')
         .select('title slug excerpt postedBy createdAt updatedAt')
         .exec();
     if (!blog) return responseHandler(res, {}, 'No records found.', 404);
