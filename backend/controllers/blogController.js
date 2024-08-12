@@ -257,3 +257,18 @@ exports.listRelated = asyncHandler(async (req, res) =>
     if (!blog) return responseHandler(res, {}, 'No records found.', 404);
     return responseHandler(res, blog, 'Related blog fetched successfully.');
 });
+
+exports.listSearch = asyncHandler(async (req, res) =>
+{
+    const { search } = req.query;
+    if (search)
+    {
+        const blogs = await Blog.find({ $or: [{ title: { $regex: search, $options: 'i' } }, { body: { $regex: search, $options: 'i' } }] })
+            .select('-photo -body')
+            .exec();
+
+        if (!blogs) return responseHandler(res, {}, 'No records found.', 404);
+        return responseHandler(res, blogs, 'Blogs fetched successfully.');
+    }
+    return responseHandler(res, {}, 'Search query is required', 422);
+});
