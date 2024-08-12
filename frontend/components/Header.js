@@ -5,6 +5,8 @@ import { APP_NAME } from '../config';
 import { signout, isAuth } from '../actions/auth';
 import NProgress from 'nprogress';
 import Router from 'next/router';
+import Search from './blog/Search';
+
 
 
 Router.onRouteChangeStart = url => NProgress.start();
@@ -60,7 +62,7 @@ const Header = () =>
     }, []);
 
     return (
-        <div>
+        <>
             <Navbar color="light" light expand="md">
                 <Link href="/" legacyBehavior>
                     <NavLink className="font-weight-bold">{APP_NAME}</NavLink>
@@ -115,7 +117,8 @@ const Header = () =>
                     </Nav>
                 </Collapse>
             </Navbar>
-        </div>
+            <Search />
+        </>
     );
 };
 
