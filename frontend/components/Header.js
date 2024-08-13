@@ -91,6 +91,23 @@ const Header = () =>
                                     </NavItem>
                                 </>
                             )}
+
+                            {isAuthenticated && isAuthenticated.role == 0 && (
+                                <NavItem>
+                                    <NavLink style={{ cursor: 'pointer' }} onClick={() => handleRedirectionOfDashboard(isAuthenticated.role)}>
+                                        {`${isAuthenticated.name}'s Dashboard`}
+                                    </NavLink>
+                                </NavItem>
+                            )}
+
+                            {isAuthenticated && isAuthenticated.role == 1 && (
+                                <NavItem>
+                                    <NavLink style={{ cursor: 'pointer' }} onClick={() => handleRedirectionOfDashboard(isAuthenticated.role)}>
+                                        {`${isAuthenticated.name}'s Dashboard`}
+                                    </NavLink>
+                                </NavItem>
+                            )}
+
                             {isAuthenticated && (
                                 <NavItem>
                                     <NavLink style={{ cursor: 'pointer' }} onClick={handleSignout}>
@@ -98,21 +115,12 @@ const Header = () =>
                                     </NavLink>
                                 </NavItem>
                             )}
-                            {isAuthenticated && isAuthenticated.role == 0 && (
-                                <NavItem>
-                                    <NavLink style={{ cursor: 'pointer' }} onClick={()=>handleRedirectionOfDashboard(isAuthenticated.role)}>
-                                        {`${isAuthenticated.name}'s Dashboard`}
-                                    </NavLink>
-                                </NavItem>
-                            )}
-                            {isAuthenticated && isAuthenticated.role == 1 && (
-                                <NavItem>
-                                    <NavLink style={{ cursor: 'pointer' }} onClick={()=>handleRedirectionOfDashboard(isAuthenticated.role)}>
-                                        {`${isAuthenticated.name}'s Dashboard`}
-                                    </NavLink>
-                                </NavItem>
-                            )}
 
+                            <NavItem>
+                                <Link href="/user/crud/blog" legacyBehavior passHref>
+                                    <NavLink className="btn btn-primary text-light">Write a blog</NavLink>
+                                </Link>
+                            </NavItem>
                         </>
                     </Nav>
                 </Collapse>

@@ -5,7 +5,7 @@ import { getCookie, isAuth } from '../../actions/auth';
 import { list, removeBlog } from '../../actions/blog';
 import moment from 'moment';
 
-const BlogReadComponent = () =>
+const BlogReadComponent = ({username}) =>
 {
     const [blogs, setBlogs] = useState([]);
     const [message, setMessage] = useState('');
@@ -18,7 +18,7 @@ const BlogReadComponent = () =>
 
     const loadBlogs = () =>
     {
-        list().then(result =>
+        list(username).then(result =>
         {
             const { data, message, success } = result;
             if (!success)
@@ -80,7 +80,7 @@ const BlogReadComponent = () =>
         if (isAuth() && isAuth().role === 0)
         {
             return (
-                <Link href={`/user/crud/${blog.slug}`} className="btn btn-sm btn-warning">
+                <Link href={`/user/crud/${blog.slug}`} className="btn ml-2 btn-sm btn-warning">
                     Update
                 </Link>
             );
