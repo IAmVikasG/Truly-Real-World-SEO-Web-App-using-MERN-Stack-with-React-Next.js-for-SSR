@@ -1,4 +1,5 @@
 const Blog = require('../models/blogModel'); // Import the Blog model to interact with blog-related data in the database
+const User = require('../models/userModel'); // Import the Blog model to interact with blog-related data in the database
 const Category = require('../models/categoryModel'); // Import the Category model to manage blog categories
 const Tag = require('../models/tagModel'); // Import the Tag model to handle blog tags
 const formidable = require('formidable'); // Import formidable to handle file uploads and form data
@@ -271,4 +272,21 @@ exports.listSearch = asyncHandler(async (req, res) =>
         return responseHandler(res, blogs, 'Blogs fetched successfully.');
     }
     return responseHandler(res, {}, 'Search query is required', 422);
+});
+
+exports.listByUser = asyncHandler(async (req, res) =>
+{
+    const user = await User.findOne({ username: req.params.username }).exec();
+    if(!user) return responseHandler(res, {}, 'User not found', 404);
+
+    let userId = user._id;
+    const blogs = await Blog.find({ postedBy: userId })
+        .populate('categories', '_id name slug')
+        .populate('tags', '_id name slug')
+        .populate('postedBy', '_id name username')
+        .select('_id title slug postedBy createdAt updatedAt')
+        .exec();
+    if (!blogs) return responseHandler(res, {}, 'No records found.', 404);
+    return responseHandler(res, blogs, 'Blogs fetched successfully.');
+
 });
