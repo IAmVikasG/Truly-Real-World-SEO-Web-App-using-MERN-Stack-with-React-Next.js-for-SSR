@@ -76,6 +76,11 @@ const Header = () =>
                                     <NavLink style={{ cursor: 'pointer' }}>Blogs</NavLink>
                                 </Link>
                             </NavItem>
+                            <NavItem>
+                                <Link href="/contact" legacyBehavior passHref>
+                                    <NavLink style={{ cursor: 'pointer' }}>Contact</NavLink>
+                                </Link>
+                            </NavItem>
 
                             {!isAuthenticated && (
                                 <>
