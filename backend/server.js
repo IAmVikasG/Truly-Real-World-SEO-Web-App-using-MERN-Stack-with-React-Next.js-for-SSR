@@ -14,6 +14,7 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const tagRoutes = require('./routes/tagRoutes');
+const formRoutes = require('./routes/formRoutes');
 
 
 // Initialize the Express application
@@ -50,6 +51,7 @@ app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', tagRoutes);
+app.use('/api', formRoutes);
 
 // Error middleware
 app.use(require('./utils/errorHandler'));
