@@ -9,7 +9,6 @@ function Layout({ children }) {
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
             <Header />
             {children}
-            <p>Footer</p>
             </GoogleOAuthProvider>
         </React.Fragment>
     );
